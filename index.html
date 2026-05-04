@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skipton Overpayment Action Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Karla:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d0d0d; --surface: #161616; --surface2: #1e1e1e;
+    --border: #2a2a2a; --gold: #d4a847; --gold-dim: #8a6d2a;
+    --green: #3ddc84; --green-dim: #1a5c38; --text: #f0ece4;
+    --muted: #6b6560; --done-bg: #0e2018;
+  }
+  body { font-family: 'Karla', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 80px; }
+  .hero { padding: 40px 24px 32px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 80% 0%, rgba(212,168,71,0.12) 0%, transparent 60%); pointer-events: none; }
+  .hero-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .hero-tag::before { content: ''; width: 24px; height: 1px; background: var(--gold); display: inline-block; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; line-height: 1.1; margin-bottom: 10px; letter-spacing: -0.5px; }
+  .hero h1 span { color: var(--gold); }
+  .hero p { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 340px; }
+  .progress-wrap { padding: 0 24px 24px; }
+  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .progress-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .progress-count { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--gold); font-weight: 500; }
+  .progress-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold-dim), var(--gold)); border-radius: 2px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); width: 0%; }
+  .steps { padding: 0 20px; }
+  .step-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 12px; overflow: hidden; transition: border-color 0.3s ease, box-shadow 0.3s ease; cursor: pointer; }
+  .step-card:hover { border-color: #3a3a3a; }
+  .step-card.done { background: var(--done-bg); border-color: var(--green-dim); }
+  .step-card.active { border-color: var(--gold-dim); box-shadow: 0 0 0 1px rgba(212,168,71,0.15), 0 8px 32px rgba(0,0,0,0.4); }
+  .step-header { display: flex; align-items: center; padding: 18px; gap: 14px; user-select: none; }
+  .step-num { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--muted); flex-shrink: 0; transition: all 0.3s ease; position: relative; }
+  .step-card.done .step-num { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+  .step-card.active .step-num { border-color: var(--gold); color: var(--gold); background: rgba(212,168,71,0.08); }
+  .checkmark { display: none; position: absolute; font-size: 16px; }
+  .step-card.done .checkmark { display: block; }
+  .step-card.done .step-num-text { display: none; }
+  .step-meta { flex: 1; min-width: 0; }
+  .step-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 2px; transition: color 0.3s; }
+  .step-card.done .step-title { color: var(--green); }
+  .step-card.active .step-title { color: var(--gold); }
+  .step-subtitle { font-size: 12px; color: var(--muted); }
+  .step-chevron { font-size: 18px; color: var(--muted); transition: transform 0.3s ease, color 0.3s; flex-shrink: 0; }
+  .step-card.active .step-chevron { transform: rotate(180deg); color: var(--gold); }
+  .step-body { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .step-card.active .step-body { max-height: 1200px; }
+  .step-content { padding: 18px 18px 20px; border-top: 1px solid var(--border); }
+  .step-text { font-size: 14px; line-height: 1.75; color: #c8c4bc; margin-bottom: 14px; }
+  .call-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 14px 0; }
+  .call-box-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .phone-number { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: 1px; margin-bottom: 4px; }
+  .phone-hours { font-size: 12px; color: var(--muted); }
+  .call-btn { display: block; width: 100%; margin-top: 12px; padding: 12px; background: var(--gold); color: #0d0d0d; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; text-align: center; border-radius: 8px; text-decoration: none; letter-spacing: 0.5px; }
+  .script-box { background: rgba(212,168,71,0.06); border: 1px solid rgba(212,168,71,0.2); border-radius: 12px; padding: 16px; margin: 14px 0; }
+  .script-box p { font-size: 14px; line-height: 1.7; color: #d4c8a8; font-style: italic; }
+  .checklist { margin: 14px 0; }
+  .check-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: var(--surface2); border-radius: 8px; margin-bottom: 6px; cursor: pointer; transition: background 0.2s; border: 1px solid transparent; }
+  .check-item.checked { background: rgba(61,220,132,0.06); border-color: rgba(61,220,132,0.2); }
+  .check-box { width: 20px; height: 20px; border: 1.5px solid var(--border); border-radius: 5px; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.2s; color: transparent; }
+  .check-item.checked .check-box { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+  .check-item-text { font-size: 13px; line-height: 1.5; color: #c8c4bc; flex: 1; }
+  .check-item.checked .check-item-text { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--green-dim); }
+  .so-field { margin-bottom: 12px; }
+  .so-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-family: 'DM Mono', monospace; }
+  .so-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 14px; transition: border-color 0.2s; }
+  .so-input:focus { outline: none; border-color: var(--gold-dim); }
+  .so-input::placeholder { color: var(--muted); font-family: 'Karla', sans-serif; font-size: 13px; }
+  .alert { background: rgba(212,168,71,0.08); border: 1px solid rgba(212,168,71,0.25); border-radius: 10px; padding: 13px 15px; font-size: 13px; line-height: 1.65; color: #d4c09a; margin: 14px 0; }
+  .alert strong { color: var(--gold); }
+  .alert.green-alert { background: rgba(61,220,132,0.06); border-color: rgba(61,220,132,0.2); color: #9dd4b4; }
+  .alert.green-alert strong { color: var(--green); }
+  .complete-btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 16px; transition: all 0.2s; letter-spacing: 0.5px; }
+  .complete-btn.mark { background: var(--gold); color: #0d0d0d; }
+  .complete-btn.unmark { background: transparent; color: var(--green); border: 1px solid var(--green-dim); }
+  .note-field { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; color: var(--text); font-family: 'Karla', sans-serif; font-size: 13px; line-height: 1.6; resize: vertical; min-height: 80px; margin-top: 10px; }
+  .celebration { display: none; text-align: center; padding: 32px 24px; margin: 12px 20px; background: var(--surface); border: 1px solid var(--green-dim); border-radius: 16px; }
+  .celebration.show { display: block; }
+  .celebration-emoji { font-size: 48px; margin-bottom: 12px; }
+  .celebration h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--green); margin-bottom: 8px; }
+  .celebration p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .reminder-card { margin: 12px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+  .reminder-card h3 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--gold); margin-bottom: 12px; }
+  .reminder-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: #c8c4bc; }
+  .reminder-item:last-child { border-bottom: none; }
+  .reminder-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-tag">Action Plan</div>
+  <h1>Skipton<br><span>Overpayment</span><br>Setup</h1>
+  <p>Your step by step guide to setting up £100 monthly overpayments and reducing your mortgage capital.</p>
+</div>
+<div class="progress-wrap">
+  <div class="progress-header">
+    <span class="progress-label">Progress</span>
+    <span class="progress-count" id="progress-count">0 / 5 complete</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+</div>
+<div class="steps">
+  <div class="step-card active" data-step="1" onclick="toggleStep(1)">
+    <div class="step-header">
+      <div class="step-num"><span class="step-num-text">01</span><span class="checkmark">✓</span></div>
+      <div class="step-meta"><div class="step-title">Call Skipton</div><div class="step-subtitle">Confirm your overpayment terms</div></div>
+      <div class="step-chevron">⌄</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <p class="step-text">Before setting anything up, call Skipton to confirm your deal allows overpayments and get the exact payment details.</p>
+      <div class="call-box">
+        <div class="call-box-label">Skipton BS Mortgage Line</div>
+        <div class="phone-number">0345 850 1700</div>
+        <div class="phone-hours">Mon to Fri 8am to 6pm · Sat 9am to 1pm</div>
+        <a href="tel:03458501700" class="call-btn">Tap to Call Skipton</a>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#8a6d2a;margin-bottom:8px;">What to say</div>
+      <div class="script-box"><p>"Hi, I would like to make regular overpayments on my mortgage. Can you confirm that my current fixed rate deal allows this without an Early Repayment Charge, and tell me the best way to set this up so it reduces my capital balance directly?"</p></div>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Confirm overpayments are allowed on my fixed rate deal</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Ask for the maximum annual overpayment without an ERC (expect 10% of balance)</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Ask how to send extra payments so they reduce capital immediately</div></div>
+      </div>
+      <button class="complete-btn mark" onclick="markDone(1,event)">Mark Step Complete</button>
+    </div></div>
+  </div>
+  <div class="step-card" data-step="2" onclick="toggleStep(2)">
+    <div class="step-header">
+      <div class="step-num"><span class="step-num-text">02</span><span class="checkmark">✓</span></div>
+      <div class="step-meta"><div class="step-title">Note Down Details</div><div class="step-subtitle">Record what Skipton tell you</div></div>
+      <div class="step-chevron">⌄</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <p class="step-text">During the call write down these three things. You will need them to set up the standing order correctly.</p>
+      <div class="so-field"><div class="so-label">Mortgage Account Number</div><input class="so-input" type="text" placeholder="e.g. 12345678"></div>
+      <div class="so-field"><div class="so-label">Skipton Sort Code</div><input class="so-input" type="text" placeholder="e.g. 04-00-04"></div>
+      <div class="so-field"><div class="so-label">Skipton Account Number</div><input class="so-input" type="text" placeholder="e.g. 70056822"></div>
+      <div class="alert"><strong>Important:</strong> The mortgage account number is your payment reference. Getting this wrong means Skipton cannot match your payment to your account.</div>
+      <button class="complete-btn mark" onclick="markDone(2,event)">Mark Step Complete</button>
+    </div></div>
+  </div>
+  <div class="step-card" data-step="3" onclick="toggleStep(3)">
+    <div class="step-header">
+      <div class="step-num"><span class="step-num-text">03</span><span class="checkmark">✓</span></div>
+      <div class="step-meta"><div class="step-title">Set Up Standing Order</div><div class="step-subtitle">In your Monzo app</div></div>
+      <div class="step-chevron">⌄</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <p class="step-text">Open your Monzo app and follow these steps. Use the details from Step 2.</p>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Open Monzo and tap Payments at the bottom</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Tap Pay then New Payee</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Enter Skipton sort code and account number from Step 2</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Set payee name to Skipton Building Society</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Enter your mortgage account number as the reference exactly as given</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Set amount to £100.00</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Set frequency to Monthly</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Set start date to 3rd or 4th of next month (after your 30th DD)</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Review and confirm the standing order</div></div>
+      </div>
+      <div class="alert"><strong>Timing tip:</strong> Your regular DD goes out around the 30th. Set the SO for the 3rd or 4th so your account has recovered first.</div>
+      <button class="complete-btn mark" onclick="markDone(3,event)">Mark Step Complete</button>
+    </div></div>
+  </div>
+  <div class="step-card" data-step="4" onclick="toggleStep(4)">
+    <div class="step-header">
+      <div class="step-num"><span class="step-num-text">04</span><span class="checkmark">✓</span></div>
+      <div class="step-meta"><div class="step-title">Confirm First Payment</div><div class="step-subtitle">Check it has hit your balance</div></div>
+      <div class="step-chevron">⌄</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <p class="step-text">After the first £100 leaves Monzo, log into Skipton online or call them to verify it was applied correctly.</p>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Confirm £100 left Monzo on the correct date</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Log in to Skipton online and check your outstanding balance has reduced</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Confirm it is not sitting as a payment reserve or future credit</div></div>
+      </div>
+      <div class="alert"><strong>Watch out:</strong> Some lenders hold overpayments as a reserve. If this has happened call Skipton and ask them to apply it directly to your outstanding balance.</div>
+      <div class="so-field" style="margin-top:14px;"><div class="so-label">Note the new balance Skipton shows</div><input class="so-input" type="text" placeholder="e.g. £295,355"></div>
+      <button class="complete-btn mark" onclick="markDone(4,event)">Mark Step Complete</button>
+    </div></div>
+  </div>
+  <div class="step-card" data-step="5" onclick="toggleStep(5)">
+    <div class="step-header">
+      <div class="step-num"><span class="step-num-text">05</span><span class="checkmark">✓</span></div>
+      <div class="step-meta"><div class="step-title">Set 6 Month Review</div><div class="step-subtitle">Keep momentum going</div></div>
+      <div class="step-chevron">⌄</div>
+    </div>
+    <div class="step-body"><div class="step-content">
+      <p class="step-text">The standing order runs itself. A 6 month reminder keeps you in control and lets you increase as your income grows.</p>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Set a phone reminder for 6 months from today to review your balance</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Note your current balance now so you can compare</div></div>
+        <div class="check-item" onclick="toggleCheck(this,event)"><div class="check-box">✓</div><div class="check-item-text">Consider increasing to £150 or £200 if your income allows</div></div>
+      </div>
+      <div class="alert green-alert"><strong>The long game:</strong> £100 per month saves around £18,000 in interest. Increasing to £200 saves roughly £32,000. Every consistent £100 extra makes a significant difference over 30 years.</div>
+      <div class="so-field" style="margin-top:14px;"><div class="so-label">Your notes</div><textarea class="note-field" placeholder="Add any notes for your 6 month review here..."></textarea></div>
+      <button class="complete-btn mark" onclick="markDone(5,event)">Mark All Done</button>
+    </div></div>
+  </div>
+</div>
+<div class="celebration" id="celebration">
+  <div class="celebration-emoji">🎉</div>
+  <h2>Plan Complete</h2>
+  <p>Your £100 overpayment is set up. Over the life of your mortgage this could save you around £18,000 and cut over 2 years off your term.</p>
+</div>
+<div class="reminder-card" id="reminder-card" style="display:none;">
+  <h3>Key things to remember</h3>
+  <div class="reminder-item"><div class="reminder-dot"></div><span>Skipton 10% overpayment limit per year — stay within it to avoid ERCs</span></div>
+  <div class="reminder-item"><div class="reminder-dot"></div><span>Your regular DD goes out around the 30th — SO set for the 3rd or 4th</span></div>
+  <div class="reminder-item"><div class="reminder-dot"></div><span>6 month review to check balance and consider increasing the amount</span></div>
+  <div class="reminder-item"><div class="reminder-dot"></div><span>Lower balance at remortgage in ~2030 could unlock a better LTV band</span></div>
+</div>
+<script>
+  const totalSteps = 5;
+  const completedSteps = new Set();
+  function toggleStep(n) {
+    const card = document.querySelector('[data-step="'+n+'"]');
+    const isActive = card.classList.contains('active');
+    document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+    if (!isActive) card.classList.add('active');
+  }
+  function toggleCheck(el, e) { e.stopPropagation(); el.classList.toggle('checked'); }
+  function markDone(n, e) {
+    e.stopPropagation();
+    const card = document.querySelector('[data-step="'+n+'"]');
+    const btn = card.querySelector('.complete-btn');
+    const isDone = card.classList.contains('done');
+    if (!isDone) {
+      card.classList.add('done'); card.classList.remove('active'); completedSteps.add(n);
+      btn.textContent = 'Mark as Incomplete'; btn.classList.remove('mark'); btn.classList.add('unmark');
+      if (n < totalSteps) { const next = document.querySelector('[data-step="'+(n+1)+'"]'); if (next) next.classList.add('active'); }
+    } else {
+      card.classList.remove('done'); completedSteps.delete(n);
+      btn.textContent = n === 5 ? 'Mark All Done' : 'Mark Step Complete';
+      btn.classList.remove('unmark'); btn.classList.add('mark');
+    }
+    updateProgress();
+  }
+  function updateProgress() {
+    const count = completedSteps.size;
+    document.getElementById('progress-fill').style.width = (count/totalSteps*100)+'%';
+    document.getElementById('progress-count').textContent = count+' / '+totalSteps+' complete';
+    const cel = document.getElementById('celebration');
+    const rem = document.getElementById('reminder-card');
+    if (count === totalSteps) { cel.classList.add('show'); rem.style.display = 'block'; }
+    else { cel.classList.remove('show'); rem.style.display = 'none'; }
+  }
+</script>
+</body>
+</html>
